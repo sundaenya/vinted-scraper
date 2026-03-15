@@ -1,0 +1,50 @@
+name: Deploy to Pi
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-unknown-linux-musl
+
+      - name: Install Cross-Compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu musl-tools
+
+      - name: Build
+        run: cargo build --release --target aarch64-unknown-linux-musl
+
+      - name: Deploy to Pi
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PI_TAILSCALE_IP }}
+          username: pi
+          key: ${{ secrets.PI_SSH_KEY }}
+          source: "target/aarch64-unknown-linux-musl/release/scraper"
+          target: "/home/pi/vinted-bot"
+          strip_components: 3
+
+      - name: Restart Service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PI_TAILSCALE_IP }}
+          username: pi
+          key: ${{ secrets.PI_SSH_KEY }}
+          script: |
+            sudo systemctl restart vinted-bot
