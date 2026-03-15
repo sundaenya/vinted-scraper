@@ -37,7 +37,7 @@ jobs:
           host: ${{ secrets.PI_TAILSCALE_IP }}
           username: pi
           key: ${{ secrets.PI_SSH_KEY }}
-          source: "target/aarch64-unknown-linux-musl/release/scraper"
+          source: "target/aarch64-unknown-linux-musl/release/vinted-scraper"
           target: "/home/pi/vinted-bot"
           strip_components: 3
 
