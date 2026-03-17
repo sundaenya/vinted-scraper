@@ -12,6 +12,7 @@ dotenvy = "0.15"
 anyhow = "1.0.102"
 mimalloc = "0.1.43"
 aho-corasick = "1.1"
+indexmap = "2.13.0"
 
 [profile.release]
 opt-level = 'z' 
