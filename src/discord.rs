@@ -38,7 +38,7 @@ pub fn clean_description(desc: &str) -> String {
         "Very good",
         "Good",
         "Satisfactory",
-        "without etiquette",
+        "without tags",
     ];
     let ac = AC.get_or_init(|| {
         AhoCorasick::builder()
